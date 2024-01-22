@@ -7,6 +7,10 @@ const (
   CustomersGroup = "/customers"
   
   // Merchants Group
+  MerchantRegister = "/auth/register/merchants"
+  MerchantLogin = "/auth/login/merchants"
   
   // Customers Group
+  CustomerRegister = "/auth/register"
+  CustomerLogin = "/auth/login"
 )
