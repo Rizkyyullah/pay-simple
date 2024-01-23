@@ -7,7 +7,6 @@ import (
 	"github.com/Rizkyyullah/pay-simple/configs"
 	"github.com/Rizkyyullah/pay-simple/users"
 	"log"
-	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5"
