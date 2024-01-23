@@ -35,12 +35,7 @@ func (s *Server) Run() {
 
 func NewServer() *Server {
 	tokenConfig := configs.LoadConfig()
-	var dsn string
-	if os.Getenv("APPMODE") == "DEPLOY" {
-	  dsn = fmt.Sprintf(os.Getenv("DATABASE_URL"))
-	} else {
-	  dsn = fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable TimeZone=Asia/Jakarta", configs.ENV.DB_Host, configs.ENV.DB_Port, configs.ENV.DB_User, configs.ENV.DB_Password, configs.ENV.DB_Name)
-	}
+  dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable TimeZone=Asia/Jakarta", configs.ENV.DB_Host, configs.ENV.DB_Port, configs.ENV.DB_User, configs.ENV.DB_Password, configs.ENV.DB_Name)
 	conn, err := pgx.Connect(context.Background(), dsn)
 	if err != nil {
 		log.Println("server.Connect Err :", err)
