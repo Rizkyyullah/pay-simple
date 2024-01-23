@@ -21,7 +21,7 @@ type Config struct {
 	Token_Secret    string
 	Token_Expire    int
 	API_Host        string
-	API_Port        int
+	PORT        int
 }
 
 type TokenConfig struct {
@@ -57,7 +57,6 @@ DB_PORT=$DB_PORT
 DB_USER=$DB_USER
 DB_PASSWORD=$DB_PASSWORD
 DB_NAME=$DB_NAME
-API_PORT=$API_PORT
 PORT=$PORT
 TOKEN_ISSUE=$TOKEN_ISSUE
 TOKEN_SECRET=$TOKEN_SECRET
