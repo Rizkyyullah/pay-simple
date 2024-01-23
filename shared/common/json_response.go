@@ -70,3 +70,19 @@ func SendErrorResponse(c *gin.Context, code int, message any) {
 		Message: message,
 	})
 }
+
+func SendUnauthorizedResponse(c *gin.Context, message any) {
+	c.AbortWithStatusJSON(http.StatusUnauthorized, &models.Meta{
+		Status:  "Error",
+		Code:    http.StatusUnauthorized,
+		Message: message,
+	})
+}
+
+func SendForbiddenResponse(c *gin.Context, message any) {
+	c.AbortWithStatusJSON(http.StatusForbidden, &models.Meta{
+		Status:  "Error",
+		Code:    http.StatusForbidden,
+		Message: message,
+	})
+}

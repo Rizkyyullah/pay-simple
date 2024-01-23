@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"github.com/Rizkyyullah/pay-simple/auth"
 	"github.com/Rizkyyullah/pay-simple/configs"
+	"github.com/Rizkyyullah/pay-simple/customers"
+	"github.com/Rizkyyullah/pay-simple/middlewares"
 	"github.com/Rizkyyullah/pay-simple/users"
 	"log"
 
@@ -14,6 +16,7 @@ import (
 
 type Server struct {
 	authUC     auth.UseCase
+	customerUC customers.UseCase
 	jwtService auth.JwtService
 	engine     *gin.Engine
 	address    string
@@ -21,8 +24,10 @@ type Server struct {
 
 func (s *Server) initRoute() {
 	v1 := s.engine.Group(configs.APIGroup)
-
+  authMiddleware := middlewares.NewAuthMiddleware(s.jwtService)
+  
   auth.NewController(v1, s.authUC).Route()
+  customers.NewController(v1, s.customerUC, authMiddleware).Route()
 }
 
 func (s *Server) Run() {
@@ -49,13 +54,16 @@ func NewServer() *Server {
 	
 	// UseCase
 	authUC := auth.NewUseCase(usersRepo, jwtService)
+	customerUC := customers.NewUseCase(usersRepo, jwtService)
 	
 	engine := gin.Default()
 	address := fmt.Sprintf("%s:%d", configs.ENV.API_Host, configs.ENV.API_Port)
 
 	return &Server{
-		authUC:     authUC,
-		engine:     engine,
-		address:    address,
+		authUC,
+		customerUC,
+		jwtService,
+		engine,
+		address,
 	}
 }

@@ -32,6 +32,7 @@ var ENV *Config
 
 func LoadConfig() TokenConfig {
 	viper.SetConfigFile(".env")
+	viper.AutomaticEnv()
 	
 	if err := viper.ReadInConfig(); err != nil {
 	  log.Fatal("configs.ReadInConfig Err :", err)

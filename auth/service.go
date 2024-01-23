@@ -13,6 +13,7 @@ import (
 
 type JwtService interface {
 	CreateToken(user entities.User) (LoginResponse, error)
+	ParseToken(tokenHeader string) (jwt.MapClaims, error)
 }
 
 type jwtService struct {
@@ -26,7 +27,7 @@ func (j *jwtService) CreateToken(user entities.User) (LoginResponse, error) {
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(j.config.JwtExpiresTime)),
 			IssuedAt: jwt.NewNumericDate(time.Now()),
 		},
-		UserId: user.ID,
+		UserID: user.ID,
 		Role: user.Role,
 	}
 
@@ -40,6 +41,23 @@ func (j *jwtService) CreateToken(user entities.User) (LoginResponse, error) {
 	return LoginResponse{ss}, nil
 }
 
-func NewJwtService(configs configs.TokenConfig) JwtService {
-	return &jwtService{configs}
+func (j *jwtService) ParseToken(tokenHeader string) (jwt.MapClaims, error) {
+	token, err := jwt.Parse(tokenHeader, func(token *jwt.Token) (interface{}, error) {
+		return j.config.JwtSignatureKey, nil
+	})
+	if err != nil {
+	  log.Println("auth.service.ParseToken Err :", err)
+		return nil, fmt.Errorf("Failed to verify token")
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return nil, fmt.Errorf("Failed to claim token")
+	}
+
+	return claims, nil
+}
+
+func NewJwtService(config configs.TokenConfig) JwtService {
+	return &jwtService{config}
 }

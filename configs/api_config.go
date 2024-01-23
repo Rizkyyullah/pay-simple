@@ -13,4 +13,7 @@ const (
   // Customers Group
   CustomerRegister = "/auth/register"
   CustomerLogin = "/auth/login"
+  
+  // Common
+  Balance = "/balance"
 )

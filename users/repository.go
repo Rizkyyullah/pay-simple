@@ -15,6 +15,7 @@ import (
 type Repository interface {
   Insert(payload entities.User) (entities.User, error)
   FindByEmail(email string) (entities.User, error)
+  FindByID(id string) (entities.User, error)
 }
 
 type repository struct {
@@ -71,6 +72,29 @@ func (r *repository) FindByEmail(email string) (entities.User, error) {
     log.Println("users.Repository: QueryRow.Scan Err :", err)
     if errors.Is(err, pgx.ErrNoRows) {
       return entities.User{}, fmt.Errorf("User with email '%s' not found", email)
+    } else {
+      return entities.User{}, err
+    }
+  }
+  
+  return user, nil
+}
+
+func (r *repository) FindByID(id string) (entities.User, error) {
+  var user entities.User
+  
+  if err := r.conn.QueryRow(context.Background(), configs.SelectUserByID, id).Scan(
+    &user.ID,
+    &user.Name,
+    &user.Username,
+    &user.Balance,
+    &user.Email,
+    &user.PhoneNumber,
+    &user.Role,
+  ); err != nil {
+    log.Println("users.Repository: FindByID.QueryRow.Scan Err :", err)
+    if errors.Is(err, pgx.ErrNoRows) {
+      return entities.User{}, fmt.Errorf("User with ID '%s' not found", id)
     } else {
       return entities.User{}, err
     }
