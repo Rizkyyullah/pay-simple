@@ -88,7 +88,6 @@ TIMEZONE=$TIMEZONE
 	  log.Fatal("configs.Unmarshal Err :", err)
 	}
 	
-	
 	return TokenConfig{
 	  IssuerName: ENV.Token_Issue,
   	JwtSignatureKey: []byte(ENV.Token_Secret),
