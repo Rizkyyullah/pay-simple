@@ -43,7 +43,7 @@ func NewServer() *Server {
 	}
 	conn, err := pgx.Connect(context.Background(), dsn)
 	if err != nil {
-		log.Fatal("server.Connect Err :", err)
+		log.Println("server.Connect Err :", err)
 	}
 	log.Printf("You are now connected to database '%s' as user '%s'", configs.ENV.DB_Name, configs.ENV.DB_User)
 
