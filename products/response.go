@@ -14,7 +14,7 @@ type InsertProductResponse struct {
   Price       int                 `json:"price,omitempty"`
 }
 
-type GetAllProductsResponse struct {
+type ProductResponse struct {
   ID          string              `json:"id"`
   Merchant    users.UserResponse  `json:"merchant,omitempty"`
   ProductName string              `json:"productName,omitempty"`

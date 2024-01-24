@@ -59,7 +59,7 @@ func NewServer() *Server {
 	// UseCase
 	authUC := auth.NewUseCase(usersRepo, jwtService)
 	usersUC := users.NewUseCase(usersRepo, jwtService)
-	productsUC := products.NewUseCase(productsRepo, usersRepo, jwtService)
+	productsUC := products.NewUseCase(productsRepo, usersUC, jwtService)
 
   productsUC.GetAllProducts(1, 5)
 	
