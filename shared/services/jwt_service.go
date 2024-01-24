@@ -1,4 +1,4 @@
-package auth
+package services
 
 import (
 	"fmt"
@@ -12,7 +12,7 @@ import (
 )
 
 type JwtService interface {
-	CreateToken(user entities.User) (LoginResponse, error)
+	CreateToken(user entities.User) (string, error)
 	ParseToken(tokenHeader string) (jwt.MapClaims, error)
 }
 
@@ -20,7 +20,7 @@ type jwtService struct {
 	config configs.TokenConfig
 }
 
-func (j *jwtService) CreateToken(user entities.User) (LoginResponse, error) {
+func (j *jwtService) CreateToken(user entities.User) (string, error) {
 	claims := models.MyCustomClaims{
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer: j.config.IssuerName,
@@ -35,16 +35,17 @@ func (j *jwtService) CreateToken(user entities.User) (LoginResponse, error) {
 	ss, err := token.SignedString(j.config.JwtSignatureKey)
 	if err != nil{
 	  log.Println("auth.service.CreateToke Err :", err)
-		return LoginResponse{}, fmt.Errorf("Oops, failed to create token")
+		return "", fmt.Errorf("Oops, failed to create token")
 	}
 
-	return LoginResponse{ss}, nil
+	return ss, nil
 }
 
 func (j *jwtService) ParseToken(tokenHeader string) (jwt.MapClaims, error) {
 	token, err := jwt.Parse(tokenHeader, func(token *jwt.Token) (interface{}, error) {
 		return j.config.JwtSignatureKey, nil
 	})
+
 	if err != nil {
 	  log.Println("auth.service.ParseToken Err :", err)
 		return nil, fmt.Errorf("Failed to verify token")

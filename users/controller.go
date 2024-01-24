@@ -1,4 +1,4 @@
-package customers
+package users
 
 import (
   "github.com/Rizkyyullah/pay-simple/configs"

@@ -16,4 +16,5 @@ const (
   
   // Common
   Balance = "/balance"
+  Products = "/products"
 )

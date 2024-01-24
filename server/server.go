@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"github.com/Rizkyyullah/pay-simple/auth"
 	"github.com/Rizkyyullah/pay-simple/configs"
-	"github.com/Rizkyyullah/pay-simple/customers"
 	"github.com/Rizkyyullah/pay-simple/middlewares"
 	"github.com/Rizkyyullah/pay-simple/users"
+	"github.com/Rizkyyullah/pay-simple/products"
+	"github.com/Rizkyyullah/pay-simple/shared/services"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -16,8 +17,9 @@ import (
 
 type Server struct {
 	authUC     auth.UseCase
-	customerUC customers.UseCase
-	jwtService auth.JwtService
+	usersUC    users.UseCase
+	productsUC    products.UseCase
+	jwtService services.JwtService
 	engine     *gin.Engine
 	address    string
 }
@@ -27,7 +29,8 @@ func (s *Server) initRoute() {
   authMiddleware := middlewares.NewAuthMiddleware(s.jwtService)
   
   auth.NewController(v1, s.authUC).Route()
-  customers.NewController(v1, s.customerUC, authMiddleware).Route()
+  users.NewController(v1, s.usersUC, authMiddleware).Route()
+  products.NewController(v1, s.productsUC, authMiddleware).Route()
 }
 
 func (s *Server) Run() {
@@ -47,21 +50,24 @@ func NewServer() *Server {
 	log.Printf("You are now connected to database '%s' as user '%s'", configs.ENV.DB_Name, configs.ENV.DB_User)
 
   // service
-  jwtService := auth.NewJwtService(tokenConfig)
+  jwtService := services.NewJwtService(tokenConfig)
 
 	// Repo
 	usersRepo := users.NewRepository(conn)
+	productsRepo := products.NewRepository(conn)
 	
 	// UseCase
 	authUC := auth.NewUseCase(usersRepo, jwtService)
-	customerUC := customers.NewUseCase(usersRepo, jwtService)
+	usersUC := users.NewUseCase(usersRepo, jwtService)
+	productsUC := products.NewUseCase(productsRepo, usersRepo, jwtService)
 	
 	engine := gin.Default()
 	address := fmt.Sprintf("%s:%d", configs.ENV.API_Host, configs.ENV.API_Port)
 
 	return &Server{
 		authUC,
-		customerUC,
+		usersUC,
+		productsUC,
 		jwtService,
 		engine,
 		address,

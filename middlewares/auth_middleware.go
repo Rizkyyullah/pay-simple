@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"github.com/Rizkyyullah/pay-simple/auth"
+	"github.com/Rizkyyullah/pay-simple/shared/services"
 	"github.com/Rizkyyullah/pay-simple/shared/common"
 	"log"
 	"strings"
@@ -14,7 +14,7 @@ type AuthMiddleware interface {
 }
 
 type authMiddleware struct {
-	jwtService auth.JwtService
+	jwtService services.JwtService
 }
 
 type AuthHeader struct {
@@ -64,6 +64,6 @@ func (m *authMiddleware) RequireToken(roles ...string) gin.HandlerFunc {
 	}
 }
 
-func NewAuthMiddleware(jwtService auth.JwtService) AuthMiddleware {
+func NewAuthMiddleware(jwtService services.JwtService) AuthMiddleware {
 	return &authMiddleware{jwtService}
 }

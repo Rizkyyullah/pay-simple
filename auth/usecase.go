@@ -4,6 +4,7 @@ import (
   "fmt"
   "github.com/Rizkyyullah/pay-simple/entities"
   "github.com/Rizkyyullah/pay-simple/users"
+  "github.com/Rizkyyullah/pay-simple/shared/services"
   "log"
   "net/http"
   "strings"
@@ -19,7 +20,7 @@ type UseCase interface {
 
 type useCase struct {
   usersRepository users.Repository
-  jwtService JwtService
+  jwtService services.JwtService
 }
 
 func (u *useCase) Register(payload RegisterInput, path string) (RegisterResponse, int, error) {
@@ -85,9 +86,9 @@ func (u *useCase) Login(payload LoginInput, path string) (LoginResponse, int, er
     return LoginResponse{}, http.StatusInternalServerError, err
   }
   
-  return token, http.StatusCreated, nil
+  return LoginResponse{token}, http.StatusCreated, nil
 }
 
-func NewUseCase(usersRepository users.Repository, jwtService JwtService) UseCase {
+func NewUseCase(usersRepository users.Repository, jwtService services.JwtService) UseCase {
   return &useCase{usersRepository, jwtService}
 }
