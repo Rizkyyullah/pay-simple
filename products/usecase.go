@@ -29,6 +29,7 @@ type UseCase interface {
   GetAllProducts(page, size int) ([]ProductResponse, models.Paging, int, error)
   GetMerchantProducts(merchantId string, page, size int) ([]entities.Product, models.Paging, error)
   GetProductByID(id string) (ProductResponse, int, error)
+  DeleteProductByID(id, userId string) (int, error)
 }
 
 type useCase struct {
@@ -111,6 +112,14 @@ func (u *useCase) GetProductByID(id string) (ProductResponse, int, error) {
   productResponse := u.getProductResponse(product, user)
 
   return productResponse, http.StatusOK, nil
+}
+
+func (u *useCase) DeleteProductByID(id, userId string) (int, error) {
+  if err := u.repository.DeleteByID(id, userId); err != nil {
+    return http.StatusNotFound, err
+  }
+
+  return http.StatusOK, nil
 }
 
 func NewUseCase(repository Repository, usersUseCase users.UseCase, jwtService services.JwtService) UseCase {

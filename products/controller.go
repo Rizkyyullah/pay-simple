@@ -57,7 +57,7 @@ func (c *controller) getAllProductsHandler(ctx *gin.Context) {
   common.SendPagedResponse(ctx, response, paging, "Get all products successfully")
 }
 
-func (c *controller) getAllProductsByMerchantIDHandler(ctx *gin.Context) {
+func (c *controller) getMerchantProductHandler(ctx *gin.Context) {
   page, _ := strconv.Atoi(ctx.DefaultQuery("page", "1"))
   size, _ := strconv.Atoi(ctx.DefaultQuery("size", "5"))
   merchantId := ctx.MustGet("userId").(string)
@@ -88,6 +88,19 @@ func (c *controller) getProductByIDHandler(ctx *gin.Context) {
   common.SendSingleResponse(ctx, product, "Get product successfully")
 }
 
+func (c *controller) deleteProductHandler(ctx *gin.Context) {
+  id := ctx.Param("id")
+  userId := ctx.MustGet("userId").(string)
+
+  statusCode, err := c.useCase.DeleteProductByID(id, userId)
+  if err != nil {
+    common.SendErrorResponse(ctx, statusCode, err.Error())
+    return
+  }
+
+  common.SendDeletedResponse(ctx, "Delete product successfully")
+}
+
 func (c *controller) Route() {
   // Common endpoint
   c.rg.GET(configs.Products, c.authMiddleware.RequireToken("MERCHANT", "CUSTOMER"), c.getAllProductsHandler)
@@ -96,7 +109,8 @@ func (c *controller) Route() {
   // Merchant endpoint
   merchant := c.rg.Group(configs.MerchantsGroup)
   merchant.POST(configs.Products, c.authMiddleware.RequireToken("MERCHANT"), c.insertHandler)
-  merchant.GET(configs.Products, c.authMiddleware.RequireToken("MERCHANT"), c.getAllProductsByMerchantIDHandler)
+  merchant.GET(configs.Products, c.authMiddleware.RequireToken("MERCHANT"), c.getMerchantProductHandler)
+  merchant.DELETE(configs.ProductsWithIDParam, c.authMiddleware.RequireToken("MERCHANT"), c.deleteProductHandler)
 }
 
 func NewController(rg *gin.RouterGroup, useCase UseCase, authMiddleware middlewares.AuthMiddleware) *controller {

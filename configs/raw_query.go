@@ -11,4 +11,5 @@ const (
   SelectAllProducts = "SELECT id, user_id, product_name, description, stock, price, created_at, updated_at FROM products ORDER BY created_at DESC LIMIT $1 OFFSET $2;"
   SelectAllProductsByUserID = "SELECT id, product_name, description, stock, price, created_at, updated_at FROM products WHERE user_id = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3;"
   SelectProductByID = "SELECT id, user_id, product_name, description, stock, price, created_at, updated_at FROM products WHERE id = $1 ORDER BY created_at DESC;"
+  DeleteProductByID = "DELETE FROM products WHERE id = $1 AND user_id = $2 RETURNING id;"
 )

@@ -21,6 +21,7 @@ type Repository interface {
   FindAll(page, size int) ([]entities.Product, models.Paging, error)
   FindAllByUserID(userId string, page, size int) ([]entities.Product, models.Paging, error)
   FindByID(id string) (entities.Product, error)
+  DeleteByID(id, userId string) error
 }
 
 type repository struct {
@@ -171,6 +172,18 @@ func (r *repository) FindByID(id string) (entities.Product, error) {
   }
 
   return product, nil
+}
+
+func (r *repository) DeleteByID(id, userId string) error {
+  if err := r.conn.QueryRow(ctx, configs.DeleteProductByID, id, userId).Scan(&id); err != nil {
+    if errors.Is(err, pgx.ErrNoRows) {
+      return fmt.Errorf("Product with id '%s' not found", id)
+    } else {
+      return err
+    }
+  }
+
+  return nil
 }
 
 func NewRepository(conn *pgx.Conn) Repository {
