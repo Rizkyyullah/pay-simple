@@ -6,6 +6,7 @@ import (
   "github.com/Rizkyyullah/pay-simple/middlewares"
   "net/http"
   "time"
+  "strconv"
 
   "github.com/gin-gonic/gin"
 )
@@ -38,7 +39,28 @@ func (c *controller) insertHandler(ctx *gin.Context) {
   common.SendCreatedResponse(ctx, product, time.Now().In(common.GetTimezone()).Format("Monday, 02 January 2006 15:04:05 MST"), "Create product successfully")
 }
 
+func (c *controller) getAllProductsHandler(ctx *gin.Context) {
+  page, _ := strconv.Atoi(ctx.DefaultQuery("page", "1"))
+  size, _ := strconv.Atoi(ctx.DefaultQuery("size", "5"))
+
+  products, paging, statusCode, err := c.useCase.GetAllProducts(page, size)
+  if err != nil {
+    common.SendErrorResponse(ctx, statusCode, err.Error())
+    return
+  }
+
+  response := []any{}
+  for _, val := range products {
+    response = append(response, val)
+  }
+
+  common.SendPagedResponse(ctx, response, paging, "Get all products successfully")
+}
+
 func (c *controller) Route() {
+  // Common endpoint
+  c.rg.GET(configs.Products, c.authMiddleware.RequireToken("MERCHANT", "CUSTOMER"), c.getAllProductsHandler)
+  
   // Merchant endpoint
   merchant := c.rg.Group(configs.MerchantsGroup)
   merchant.POST(configs.Products, c.authMiddleware.RequireToken("MERCHANT"), c.insertHandler)

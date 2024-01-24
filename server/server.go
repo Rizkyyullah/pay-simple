@@ -60,6 +60,8 @@ func NewServer() *Server {
 	authUC := auth.NewUseCase(usersRepo, jwtService)
 	usersUC := users.NewUseCase(usersRepo, jwtService)
 	productsUC := products.NewUseCase(productsRepo, usersRepo, jwtService)
+
+  productsUC.GetAllProducts(1, 5)
 	
 	engine := gin.Default()
 	address := fmt.Sprintf("%s:%d", configs.ENV.API_Host, configs.ENV.API_Port)

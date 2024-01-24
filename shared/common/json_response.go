@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SendCreatedResponse(c *gin.Context, data interface{}, createdAt string, message string) {
+func SendCreatedResponse(c *gin.Context, data any, createdAt string, message string) {
 	c.JSON(http.StatusCreated, &models.SingleResponse{
 		Meta: models.Meta{
 			Status:    "Success",
@@ -19,7 +19,7 @@ func SendCreatedResponse(c *gin.Context, data interface{}, createdAt string, mes
 	})
 }
 
-func SendUpdatedResponse(c *gin.Context, data interface{}, updatedAt string, message string) {
+func SendUpdatedResponse(c *gin.Context, data any, updatedAt string, message string) {
 	c.JSON(http.StatusCreated, &models.SingleResponse{
 		Meta: models.Meta{
 			Status:    "Success",
@@ -31,7 +31,7 @@ func SendUpdatedResponse(c *gin.Context, data interface{}, updatedAt string, mes
 	})
 }
 
-func SendSingleResponse(c *gin.Context, data interface{}, message string) {
+func SendSingleResponse(c *gin.Context, data any, message string) {
 	c.JSON(http.StatusOK, &models.SingleResponse{
 		Meta: models.Meta{
 			Status:  "Success",
@@ -42,7 +42,7 @@ func SendSingleResponse(c *gin.Context, data interface{}, message string) {
 	})
 }
 
-func SendPagedResponse(c *gin.Context, data []interface{}, paging models.Paging, message string) {
+func SendPagedResponse(c *gin.Context, data []any, paging models.Paging, message string) {
 	c.JSON(http.StatusOK, &models.PagedResponse{
 		Meta: models.Meta{
 			Status:  "Success",
