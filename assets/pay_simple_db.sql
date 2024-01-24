@@ -37,7 +37,7 @@ CREATE TABLE products (
 CREATE TABLE transactions (
   id VARCHAR(10) PRIMARY KEY NOT NULL,
   user_id VARCHAR(10) NOT NULL,
-  transaction_date DATE(0) DEFAULT CURRENT_DATE,
+  transaction_date DATE DEFAULT CURRENT_DATE,
   transaction_type transaction_type NOT NULL,
   paid_status BOOLEAN DEFAULT false,
   cashflow cashflow_type NOT NULL,
