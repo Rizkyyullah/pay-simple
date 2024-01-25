@@ -16,7 +16,9 @@ const (
   // transaction query
   SelectAllTransactionByUserID = "SELECT id, user_id, transaction_date, transaction_type, paid_status, cashflow, created_at, updated_at FROM transactions WHERE user_id = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3;"
   SelectTransactionByID = "SELECT id, transaction_date, transaction_type, paid_status, cashflow, created_at FROM transactions WHERE id = $1 AND user_id = $2;"
+  InsertTransaction = "INSERT INTO transactions(id, user_id, transaction_type, paid_status, cashflow) VALUES($1, $2, $3, $4, $5) RETURNING id, user_id, transaction_date, transaction_type, paid_status, cashflow, created_at;"
 
   // transactions detail
   SelectAllTransactionsDetail = "SELECT id, product_id, quantity, total_price, created_at FROM transaction_details WHERE transaction_id = $1 ORDER BY created_at DESC;"
+  InsertTransactionDetail = "INSERT INTO transaction_details(id, transaction_id, product_id, quantity, total_price) VALUES($1, $2, $3, $4, $5) RETURNING id, transaction_id, product_id, quantity, total_price, created_at;"
 )

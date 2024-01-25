@@ -6,6 +6,7 @@ import (
   "github.com/Rizkyyullah/pay-simple/middlewares"
   "net/http"
   "strconv"
+  "time"
 
   "github.com/gin-gonic/gin"
 )
@@ -46,11 +47,34 @@ func (c *controller) getTransactionHistoryByIDHandler(ctx *gin.Context) {
   common.SendSingleResponseWithData(ctx, transaction, "Your transaction history")
 }
 
+func (c *controller) createTransactionHandler(ctx *gin.Context) {
+  var userId = ctx.MustGet("userId").(string)
+  var payload CreateTransactionInput
+  if err := ctx.ShouldBindJSON(&payload); err != nil {
+    common.SendErrorResponse(ctx, http.StatusBadRequest, err.Error())
+    return
+  }
+
+  if err := common.ValidateInput(payload); len(err) > 0 {
+    common.SendErrorResponse(ctx, http.StatusBadRequest, err)
+    return
+  }
+
+  _, err := c.useCase.CreateTransaction(userId, payload)
+  if err != nil {
+    common.SendErrorResponse(ctx, http.StatusInternalServerError, err.Error())
+    return
+  }
+
+  common.SendCreatedResponseWithoutData(ctx, time.Now().In(common.GetTimezone()).Format("Monday, 02 January 2006 15:04:05"), "Create transaction successfully")
+}
+
 func (c *controller) Route() {
   // Customer endpoint
   customer := c.rg.Group(configs.CustomersGroup)
   customer.GET(configs.CustomerTransaction, c.authMiddleware.RequireToken("CUSTOMER"), c.getTransactionsHistoryHandler)
   customer.GET(configs.CustomerTransactionWithIDParam, c.authMiddleware.RequireToken("CUSTOMER"), c.getTransactionHistoryByIDHandler)
+  customer.POST(configs.CustomerTransaction, c.authMiddleware.RequireToken("CUSTOMER"), c.createTransactionHandler)
 }
 
 func NewController(rg *gin.RouterGroup, useCase UseCase, authMiddleware middlewares.AuthMiddleware) *controller {

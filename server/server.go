@@ -68,7 +68,7 @@ func NewServer() *Server {
 	usersUC := users.NewUseCase(usersRepo, jwtService)
 	productsUC := products.NewUseCase(productsRepo, usersUC, jwtService)
 	transactionsDetailUC := transactions_detail.NewUseCase(transactionsDetailRepo, productsUC)
-	transactionsUC := transactions.NewUseCase(transactionsRepo, transactionsDetailUC)
+	transactionsUC := transactions.NewUseCase(transactionsRepo, transactionsDetailUC, productsUC, usersUC)
 
 	engine := gin.Default()
 	address := fmt.Sprintf("%s:%d", configs.ENV.API_Host, configs.ENV.API_Port)

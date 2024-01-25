@@ -1,14 +1,13 @@
 package transactions_detail
 
 import (
-  "fmt"
   "github.com/Rizkyyullah/pay-simple/entities"
   "github.com/Rizkyyullah/pay-simple/products"
-  "github.com/Rizkyyullah/pay-simple/shared/common"
 )
 
 type UseCase interface {
   GetTransactionsDetail(transactionId string) ([]TransactionDetailResponse, error)
+  CreateTransactionDetail(id, transactionId, productId string, quantity, totalPrice int) (TransactionDetailResponse, error)
 }
 
 type useCase struct {
@@ -17,15 +16,30 @@ type useCase struct {
 }
 
 func (u *useCase) GetTransactionsDetail(transactionId string) ([]TransactionDetailResponse, error) {
-  fmt.Println(transactionId)
   transactionsDetail, err := u.repository.FindAllByTransactionIDAndProductID(transactionId)
   if err != nil {
     return nil, err
   }
-  fmt.Println(transactionsDetail)
 
   transactionsDetailResponse := u.getTransactionsDetailResponse(transactionsDetail)
   return transactionsDetailResponse, nil
+}
+
+func (u *useCase) CreateTransactionDetail(id, transactionId, productId string, quantity, totalPrice int) (TransactionDetailResponse, error) {
+  transactionDetail, err := u.repository.Insert(id, transactionId, productId, quantity, totalPrice)
+  if err != nil {
+    return TransactionDetailResponse{}, err
+  }
+
+  tdResponse := TransactionDetailResponse{
+    ID: transactionDetail.ID,
+    TransactionID: transactionDetail.TransactionID,
+    Quantity: transactionDetail.Quantity,
+    TotalPrice: transactionDetail.TotalPrice,
+    CreatedAt: transactionDetail.CreatedAt.Format("Monday, 02 January 2006 15:04:05 WIB"),
+  }
+
+  return tdResponse, nil
 }
 
 func NewUseCase(repository Repository, productsUseCase products.UseCase) UseCase {
@@ -39,7 +53,7 @@ func (u *useCase) getTransactionsDetailResponse(transactionsDetail []entities.Tr
       ID: val.ID,
       Quantity: val.Quantity,
       TotalPrice: val.TotalPrice,
-      CreatedAt: val.CreatedAt.In(common.GetTimezone()).Format("Monday, 02 January 2006 15:04:05 MST"),
+      CreatedAt: val.CreatedAt.Format("Monday, 02 January 2006 15:04:05 WIB"),
     }
 
     transactionsDetailResponse = append(transactionsDetailResponse, tdResponse)

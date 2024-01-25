@@ -19,6 +19,15 @@ func SendCreatedResponse(c *gin.Context, data any, createdAt string, message str
 	})
 }
 
+func SendCreatedResponseWithoutData(c *gin.Context, createdAt string, message string) {
+	c.JSON(http.StatusCreated, &models.Meta{
+		Status:    "Success",
+		Code:      http.StatusCreated,
+		Message:   message,
+		CreatedAt: createdAt,
+	})
+}
+
 func SendUpdatedResponse(c *gin.Context, data any, updatedAt string, message string) {
 	c.JSON(http.StatusCreated, &models.SingleResponse{
 		Meta: models.Meta{

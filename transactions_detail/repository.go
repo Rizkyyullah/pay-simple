@@ -13,6 +13,7 @@ var ctx = context.Background()
 
 type Repository interface {
   FindAllByTransactionIDAndProductID(transactionId string) ([]entities.TransactionsDetail, error)
+  Insert(id, transactionId, productId string, quantity, totalPrice int) (entities.TransactionsDetail, error)
 }
 
 type repository struct {
@@ -51,6 +52,24 @@ func (r *repository) FindAllByTransactionIDAndProductID(transactionId string) ([
   }
 
   return transactionsDetail, nil
+}
+
+func (r *repository) Insert(id, transactionId, productId string, quantity, totalPrice int) (entities.TransactionsDetail, error) {
+  var transactionDetail entities.TransactionsDetail
+
+  if err := r.conn.QueryRow(ctx, configs.InsertTransactionDetail, id, transactionId, productId, quantity, totalPrice).Scan(
+    &transactionDetail.ID,
+    &transactionDetail.TransactionID,
+    &transactionDetail.ProductID,
+    &transactionDetail.Quantity,
+    &transactionDetail.TotalPrice,
+    &transactionDetail.CreatedAt,
+  ); err != nil {
+    log.Println("transactions_detail.repository: Insert.QueryRow.Scan Err :", err)
+    return entities.TransactionsDetail{}, err
+  }
+
+  return transactionDetail, nil
 }
 
 func NewRepository(conn *pgx.Conn) Repository {

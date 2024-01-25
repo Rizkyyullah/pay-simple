@@ -8,7 +8,7 @@ type TransactionResponse struct {
   TransactionDate     string                          `json:"transactionDate,omitempty"`
   TransactionType     string                          `json:"transactionType,omitempty"`
   PaidStatus          bool                            `json:"paidStatus,omitempty"`
-  Cashflow            string                          `json:"cashFlow,omitempty"`
+  Cashflow            string                          `json:"cashflow,omitempty"`
   CreatedAt           string                          `json:"createdAt,omitempty"`
   UpdatedAt           string                          `json:"updatedAt,omitempty"`
 }

@@ -33,7 +33,7 @@ func (c *controller) registerHandler(ctx *gin.Context) {
     return
   }
 
-  common.SendCreatedResponse(ctx, user, time.Now().In(common.GetTimezone()).Format("Monday, 02 January 2006 15:04:05 MST"), "Register Successfully")
+  common.SendCreatedResponse(ctx, user, time.Now().In(common.GetTimezone()).Format("Monday, 02 January 2006 15:04:05 WIB"), "Register Successfully")
 }
 
 func (c *controller) loginHandler(ctx *gin.Context) {

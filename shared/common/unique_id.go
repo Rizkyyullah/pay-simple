@@ -16,6 +16,5 @@ func UniqueID(conn *pgx.Conn, prefix, sequence string) (string, error) {
   }
   
   uniqueID := fmt.Sprintf("%s-%0.4d", prefix, currentSequence) // e.g. USR-0001
-  fmt.Println(uniqueID)
   return uniqueID, nil
 }
