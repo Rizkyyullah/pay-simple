@@ -9,6 +9,7 @@ const (
   // Merchants Group
   MerchantRegister = "/auth/register/merchants"
   MerchantLogin = "/auth/login/merchants"
+  MerchantLogout = "/auth/logout/merchants"
   
   // Customers Group
   CustomerRegister = "/auth/register"

@@ -50,13 +50,20 @@ func (c *controller) loginHandler(ctx *gin.Context) {
     return
   }
 
-  common.SendCreatedResponse(ctx, token, "", "Login Successfully. Token has been generated.")
+  ctx.SetCookie("auth_cookie", token, 3600, configs.APIGroup + "/", "", false, true)
+  common.SendSingleResponse(ctx, nil, "Login Successfully")
+}
+
+func (c *controller) logoutHandler(ctx *gin.Context) {
+  ctx.SetCookie("auth_cookie", "", -1, configs.APIGroup + "/", "", false, true)
+  common.SendSingleResponse(ctx, nil, "Logout Successfully")
 }
 
 func (c *controller) Route() {
   // Merchant endpoint
   c.rg.POST(configs.MerchantRegister, c.registerHandler)
   c.rg.POST(configs.MerchantLogin, c.loginHandler)
+  c.rg.GET(configs.MerchantLogout, c.logoutHandler)
 
   // Customer endpoint
   c.rg.POST(configs.CustomerRegister, c.registerHandler)

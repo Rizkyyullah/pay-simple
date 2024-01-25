@@ -10,7 +10,7 @@ type Meta struct {
 
 type SingleResponse struct {
 	Meta Meta        `json:"meta"`
-	Data interface{} `json:"data"`
+	Data interface{} `json:"data,omitempty"`
 }
 
 type PagedResponse struct {
