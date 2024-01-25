@@ -34,10 +34,23 @@ func (c *controller) getTransactionsHistoryHandler(ctx *gin.Context) {
   common.SendPagedResponse(ctx, response, paging, "Your transactions history")
 }
 
+func (c *controller) getTransactionHistoryByIDHandler(ctx *gin.Context) {
+  id := ctx.Param("id")
+  userId := ctx.MustGet("userId").(string)
+  transaction, statusCode, err := c.useCase.GetTransactionHistoryByID(id, userId)
+  if err != nil {
+    common.SendErrorResponse(ctx, statusCode, err.Error())
+    return
+  }
+
+  common.SendSingleResponseWithData(ctx, transaction, "Your transaction history")
+}
+
 func (c *controller) Route() {
   // Customer endpoint
   customer := c.rg.Group(configs.CustomersGroup)
   customer.GET(configs.CustomerTransaction, c.authMiddleware.RequireToken("CUSTOMER"), c.getTransactionsHistoryHandler)
+  customer.GET(configs.CustomerTransactionWithIDParam, c.authMiddleware.RequireToken("CUSTOMER"), c.getTransactionHistoryByIDHandler)
 }
 
 func NewController(rg *gin.RouterGroup, useCase UseCase, authMiddleware middlewares.AuthMiddleware) *controller {

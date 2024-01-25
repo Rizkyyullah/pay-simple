@@ -1,6 +1,7 @@
 package transactions_detail
 
 import (
+  "fmt"
   "github.com/Rizkyyullah/pay-simple/entities"
   "github.com/Rizkyyullah/pay-simple/products"
   "github.com/Rizkyyullah/pay-simple/shared/common"
@@ -16,10 +17,12 @@ type useCase struct {
 }
 
 func (u *useCase) GetTransactionsDetail(transactionId string) ([]TransactionDetailResponse, error) {
+  fmt.Println(transactionId)
   transactionsDetail, err := u.repository.FindAllByTransactionIDAndProductID(transactionId)
   if err != nil {
     return nil, err
   }
+  fmt.Println(transactionsDetail)
 
   transactionsDetailResponse := u.getTransactionsDetailResponse(transactionsDetail)
   return transactionsDetailResponse, nil

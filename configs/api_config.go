@@ -15,6 +15,7 @@ const (
   CustomerRegister = "/auth/register"
   CustomerLogin = "/auth/login"
   CustomerTransaction = "/transactions"
+  CustomerTransactionWithIDParam = "/transactions/:id"
   
   // Common
   Balance = "/balance"

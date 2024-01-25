@@ -17,6 +17,7 @@ var ctx = context.Background()
 
 type Repository interface {
   FindAllByUserID(userId string, page, size int) ([]entities.Transaction, models.Paging, error)
+  FindByID(id, userId string) (entities.Transaction, error)
 }
 
 type repository struct {
@@ -70,6 +71,24 @@ func (r *repository) FindAllByUserID(userId string, page, size int) ([]entities.
   }
 
   return transactions, paging, nil
+}
+
+func (r *repository) FindByID(id, userId string) (entities.Transaction, error) {
+  var transaction entities.Transaction
+
+  if err := r.conn.QueryRow(ctx, configs.SelectTransactionByID, id, userId).Scan(
+    &transaction.ID,
+    &transaction.TransactionDate,
+    &transaction.TransactionType,
+    &transaction.PaidStatus,
+    &transaction.Cashflow,
+    &transaction.CreatedAt,
+  ); err != nil {
+    log.Println("transactions.repository: FindByID.QueryRow.Scan Err :", err)
+    return entities.Transaction{}, err
+  }
+
+  return transaction, nil
 }
 
 func NewRepository(conn *pgx.Conn) Repository {
