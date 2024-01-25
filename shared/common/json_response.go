@@ -31,7 +31,7 @@ func SendUpdatedResponse(c *gin.Context, data any, updatedAt string, message str
 	})
 }
 
-func SendSingleResponse(c *gin.Context, data any, message string) {
+func SendSingleResponseWithData(c *gin.Context, data any, message string) {
 	c.JSON(http.StatusOK, &models.SingleResponse{
 		Meta: models.Meta{
 			Status:  "Success",
@@ -39,6 +39,14 @@ func SendSingleResponse(c *gin.Context, data any, message string) {
 			Message: message,
 		},
 		Data: data,
+	})
+}
+
+func SendSingleResponseWithoutData(c *gin.Context, message string) {
+	c.JSON(http.StatusOK, &models.Meta{
+		Status:  "Success",
+		Code:    http.StatusOK,
+		Message: message,
 	})
 }
 

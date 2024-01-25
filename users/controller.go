@@ -22,7 +22,7 @@ func (c *controller) getBalanceHandler(ctx *gin.Context) {
     return
   }
 
-  common.SendSingleResponse(ctx, balance, "Your current balance")
+  common.SendSingleResponseWithData(ctx, balance, "Your current balance")
 }
 
 func (c *controller) Route() {

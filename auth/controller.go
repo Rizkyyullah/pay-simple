@@ -51,12 +51,12 @@ func (c *controller) loginHandler(ctx *gin.Context) {
   }
 
   ctx.SetCookie("auth_cookie", token, 3600, configs.APIGroup + "/", "", false, true)
-  common.SendSingleResponse(ctx, nil, "Login Successfully")
+  common.SendSingleResponseWithoutData(ctx, "Login Successfully")
 }
 
 func (c *controller) logoutHandler(ctx *gin.Context) {
   ctx.SetCookie("auth_cookie", "", -1, configs.APIGroup + "/", "", false, true)
-  common.SendSingleResponse(ctx, nil, "Logout Successfully")
+  common.SendSingleResponseWithData(ctx, nil, "Logout Successfully")
 }
 
 func (c *controller) Route() {

@@ -39,7 +39,7 @@ func (m *authMiddleware) RequireToken(roles ...string) gin.HandlerFunc {
     authCookie, err := ctx.Cookie("auth_cookie")
     if err != nil {
       log.Println("middlewares.AuthMiddleware: Cookie Err :", err.Error())
-			common.SendUnauthorizedResponse(ctx, "Unauthorized : " + err.Error())
+			common.SendUnauthorizedResponse(ctx, "Unauthorized : No cookies found or cookies have expired")
 			return
     }
 
@@ -53,7 +53,7 @@ func (m *authMiddleware) RequireToken(roles ...string) gin.HandlerFunc {
 		ctx.Set("userId", claims["userId"])
 
 		validRole := false
-		for _, role := range roles{
+		for _, role := range roles {
 			if role == claims["role"]{
 				validRole = true
 				break
@@ -61,8 +61,8 @@ func (m *authMiddleware) RequireToken(roles ...string) gin.HandlerFunc {
 		}
 
 		if !validRole {
-			log.Printf("RequireToken.validRole \n")
-			common.SendForbiddenResponse(ctx, "You are prohibited from accessing these resources")
+			log.Println("RequireToken.validRole")
+			common.SendForbiddenResponse(ctx, "You are prohibited from accessing these resource")
 			return
 		}
 

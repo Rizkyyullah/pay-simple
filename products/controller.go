@@ -85,7 +85,7 @@ func (c *controller) getProductByIDHandler(ctx *gin.Context) {
     return
   }
 
-  common.SendSingleResponse(ctx, product, "Get product successfully")
+  common.SendSingleResponseWithData(ctx, product, "Get product successfully")
 }
 
 func (c *controller) deleteProductHandler(ctx *gin.Context) {

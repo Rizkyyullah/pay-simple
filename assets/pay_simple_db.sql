@@ -15,7 +15,7 @@ CREATE TABLE users (
   username VARCHAR(100) NOT NULL,
   balance INT DEFAULT 10000000,
   email VARCHAR(255) UNIQUE NOT NULL,
-  phone_number CHAR(13),
+  phone_number CHAR(13) UNIQUE,
   password VARCHAR(255) NOT NULL,
   role role_type NOT NULL,
   created_at TIMESTAMP(0) DEFAULT CURRENT_TIMESTAMP,
