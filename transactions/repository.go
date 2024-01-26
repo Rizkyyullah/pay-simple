@@ -8,7 +8,6 @@ import (
   "math"
   "github.com/Rizkyyullah/pay-simple/configs"
   "github.com/Rizkyyullah/pay-simple/entities"
-  "github.com/Rizkyyullah/pay-simple/products"
   "github.com/Rizkyyullah/pay-simple/shared/common"
   "github.com/Rizkyyullah/pay-simple/shared/models"
   
@@ -20,7 +19,7 @@ var ctx = context.Background()
 type Repository interface {
   FindAllByUserID(userId string, page, size int) ([]entities.Transaction, models.Paging, error)
   FindByID(id, userId string) (entities.Transaction, error)
-  Insert(userId, transactionType string, paidStatus bool, cashflow string, products []products.ProductResponse, merchants map[string]entities.User, quantities map[string]int, balance int) (entities.Transaction, error)
+  Insert(dto TransactionDTO) error
 }
 
 type repository struct {
@@ -94,16 +93,58 @@ func (r *repository) FindByID(id, userId string) (entities.Transaction, error) {
   return transaction, nil
 }
 
-func (r *repository) Insert(userId, transactionType string, paidStatus bool, cashflow string, products []products.ProductResponse, merchants map[string]entities.User, quantities map[string]int, balance int) (entities.Transaction, error) {
+func (r *repository) Insert(dto TransactionDTO) error {
   var transaction entities.Transaction
 
   tx, err := r.conn.Begin(ctx)
   if err != nil {
-    return entities.Transaction{}, err
+    return err
   }
   defer tx.Rollback(ctx)
   
-  trxId, _ := common.UniqueID(tx.Conn(), "TRX", "transactions_id_seq")
+  if err := r.insertTransaction(tx.Conn(), tx, &transaction, dto.UserID, dto.TransactionType, dto.PaidStatus, dto.Cashflow); err != nil {
+    return err
+  }
+
+  currentBalance := dto.Balance
+  for _, product := range dto.Products {
+    productId := product.ID
+    quantity := dto.Quantities[productId]
+    totalPrice := product.Price * quantity
+    merchantId := dto.Merchants[product.ID].ID
+    currentBalance -= totalPrice
+    if currentBalance < 0 {
+      return fmt.Errorf("Your balance is insufficient")
+    }
+
+    if err := r.insertTransactionDetails(tx.Conn(), tx, transaction.ID, productId, quantity, totalPrice); err != nil {
+      return err
+    }
+
+    merchantBalance := 0
+    if err := r.updateMerchantBalance(tx, &merchantBalance, merchantId, totalPrice); err != nil {
+      return err
+    }
+  }
+
+  if err := r.updateCustomerBalance(tx, &currentBalance, dto.UserID); err != nil {
+    return nil
+  }
+
+  if err := tx.Commit(ctx); err != nil {
+    log.Println("transactions.repository: Insert.tx.Commit Err :", err)
+    return err
+  }
+
+  return nil
+}
+
+func NewRepository(conn *pgx.Conn) Repository {
+  return &repository{conn}
+}
+
+func (r *repository) insertTransaction(conn *pgx.Conn, tx pgx.Tx, transaction *entities.Transaction, userId, transactionType string, paidStatus bool, cashflow string) error {
+  trxId, _ := common.UniqueID(conn, "TRX", "transactions_id_seq")
   if err := tx.QueryRow(ctx, configs.InsertTransaction, trxId, userId, transactionType, paidStatus, cashflow).Scan(
     &transaction.ID,
     &transaction.UserID,
@@ -114,55 +155,47 @@ func (r *repository) Insert(userId, transactionType string, paidStatus bool, cas
     &transaction.CreatedAt,
   ); err != nil {
     log.Println("transactions.repository: Insert.QueryRow.Scan Err :", err)
-    return entities.Transaction{}, err
+    return err
   }
 
-  currentBalance := balance
-  for _, product := range products {
-    productId := product.ID
-    quantity := quantities[productId]
-    totalPrice := product.Price * quantity
-    merchantId := merchants[product.ID].ID
-    currentBalance -= totalPrice
-    if currentBalance < 0 {
-      return entities.Transaction{}, fmt.Errorf("Your balance is insufficient")
-    }
-
-    tdId, _ := common.UniqueID(tx.Conn(), "TRXD", "transaction_details_id_seq")
-    if _, err := tx.Exec(ctx, configs.InsertTransactionDetail, tdId, transaction.ID, product.ID, quantity, totalPrice); err != nil {
-      return entities.Transaction{}, err
-    }
-
-    merchantBalance := 0
-    if err := tx.QueryRow(ctx, "SELECT balance FROM users WHERE id = $1", merchantId).Scan(&merchantBalance); err != nil {
-      return entities.Transaction{}, err
-    }
-
-    cmdTag, err := tx.Exec(ctx, "UPDATE users SET balance = $2 WHERE id = $1 AND role = 'MERCHANT';", merchantId, merchantBalance + totalPrice)
-    if err != nil {
-      return entities.Transaction{}, err
-    }
-    if cmdTag.RowsAffected() != 1 {
-      return entities.Transaction{}, fmt.Errorf("No row found to update")
-    }
-  }
-
-  cmdTag, err := tx.Exec(ctx, "UPDATE users SET balance = $2 WHERE id = $1 AND role = 'CUSTOMER';", userId, currentBalance)
-  if err != nil {
-    return entities.Transaction{}, err
-  }
-  if cmdTag.RowsAffected() != 1 {
-    return entities.Transaction{}, fmt.Errorf("No row found to update")
-  }
-
-  if err := tx.Commit(ctx); err != nil {
-    log.Println("transactions.repository: Insert.tx.Commit Err :", err)
-    return entities.Transaction{}, err
-  }
-
-  return transaction, nil
+  return nil
 }
 
-func NewRepository(conn *pgx.Conn) Repository {
-  return &repository{conn}
+func (r *repository) insertTransactionDetails(conn *pgx.Conn, tx pgx.Tx, transactionId, productId string, quantity, totalPrice int) error {
+  tdId, _ := common.UniqueID(conn, "TRXD", "transaction_details_id_seq")
+  if _, err := tx.Exec(ctx, configs.InsertTransactionDetail, tdId, transactionId, productId, quantity, totalPrice); err != nil {
+    return err
+  }
+
+  return nil
+}
+
+func (r *repository) updateMerchantBalance(tx pgx.Tx, merchantBalance *int, merchantId string, totalPrice int) error {
+  if err := tx.QueryRow(ctx, "SELECT balance FROM users WHERE id = $1", merchantId).Scan(&merchantBalance); err != nil {
+    return err
+  }
+
+  cmdTag, err := tx.Exec(ctx, "UPDATE users SET balance = $2 WHERE id = $1 AND role = 'MERCHANT';", merchantId, *merchantBalance + totalPrice)
+  if err != nil {
+    return err
+  }
+
+  if cmdTag.RowsAffected() != 1 {
+    return fmt.Errorf("No row found to update")
+  }
+
+  return nil
+}
+
+func (r *repository) updateCustomerBalance(tx pgx.Tx, customerBalance *int, customerId string) error {
+  cmdTag, err := tx.Exec(ctx, "UPDATE users SET balance = $2 WHERE id = $1 AND role = 'CUSTOMER';", customerId, *customerBalance)
+  if err != nil {
+    return err
+  }
+
+  if cmdTag.RowsAffected() != 1 {
+    return fmt.Errorf("No row found to update")
+  }
+
+  return nil
 }

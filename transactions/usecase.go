@@ -16,7 +16,7 @@ import (
 type UseCase interface {
   GetTransactionsHistory(userId string, page, size int) ([]TransactionResponse, models.Paging, error)
   GetTransactionHistoryByID(id, userId string) (TransactionResponse, int, error)
-  CreateTransaction(userId string, payload CreateTransactionInput) (TransactionResponse, error)
+  CreateTransaction(userId string, payload CreateTransactionInput) error
 }
 
 type useCase struct {
@@ -50,43 +50,39 @@ func (u *useCase) GetTransactionHistoryByID(id, userId string) (TransactionRespo
   return transactionResponse, http.StatusOK, nil
 }
 
-func (u *useCase) CreateTransaction(userId string, payload CreateTransactionInput) (TransactionResponse, error) {
+func (u *useCase) CreateTransaction(userId string, payload CreateTransactionInput) error {
   paidStatus := true
   cashflow := "MONEY_OUT"
   transactionType := "DEBIT"
 
   products, err := u.getProducts(payload)
   if err != nil {
-    return TransactionResponse{}, err
+    return err
   }
 
   merchants, err := u.getMerchants(payload)
   if err != nil {
-    return TransactionResponse{}, err
+    return err
   }
 
   quantities := u.getQuantities(payload)
   balance, _, err := u.usersUC.GetBalance(userId)
   if err != nil {
-    return TransactionResponse{}, err
+    return err
   }
 
-  transaction, err := u.repository.Insert(userId, transactionType, paidStatus, cashflow, products, merchants, quantities, balance.Balance)
-  if err != nil {
-    return TransactionResponse{}, err
+  dto := TransactionDTO{
+    UserID: userId,
+    TransactionType: transactionType,
+    PaidStatus: paidStatus,
+    Cashflow: cashflow,
+    Products: products,
+    Merchants: merchants,
+    Quantities: quantities,
+    Balance: balance.Balance,
   }
 
-  trResponse := TransactionResponse{
-    ID: transaction.ID,
-    TransactionDetails: nil,
-    TransactionDate: transaction.TransactionDate.Format("Monday, 02 January 2006"),
-    TransactionType: transaction.TransactionType,
-    PaidStatus: transaction.PaidStatus,
-    Cashflow: transaction.Cashflow,
-    CreatedAt: transaction.CreatedAt.Format("Monday, 02 January 2006 15:04:05"),
-  }
-
-  return trResponse, nil
+  return u.repository.Insert(dto)
 }
 
 func NewUseCase(repository Repository, transactionsDetailUC transactions_detail.UseCase, productsUC products.UseCase, usersUC users.UseCase) UseCase {

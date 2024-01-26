@@ -60,8 +60,7 @@ func (c *controller) createTransactionHandler(ctx *gin.Context) {
     return
   }
 
-  _, err := c.useCase.CreateTransaction(userId, payload)
-  if err != nil {
+  if err := c.useCase.CreateTransaction(userId, payload); err != nil {
     common.SendErrorResponse(ctx, http.StatusInternalServerError, err.Error())
     return
   }
