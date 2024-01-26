@@ -10,6 +10,7 @@ import (
   "github.com/Rizkyyullah/pay-simple/entities"
   "github.com/Rizkyyullah/pay-simple/shared/common"
   "github.com/Rizkyyullah/pay-simple/shared/models"
+  "github.com/Rizkyyullah/pay-simple/users"
   
   "github.com/jackc/pgx/v5"
 )
@@ -20,6 +21,7 @@ type Repository interface {
   FindAllByUserID(userId string, page, size int) ([]entities.Transaction, models.Paging, error)
   FindByID(id, userId string) (entities.Transaction, error)
   Insert(dto TransactionDTO) error
+  UpdateBalance(dto TransactionDTO) (users.GetBalanceResponse, error)
 }
 
 type repository struct {
@@ -137,6 +139,39 @@ func (r *repository) Insert(dto TransactionDTO) error {
   }
 
   return nil
+}
+
+func (r *repository) UpdateBalance(dto TransactionDTO) (users.GetBalanceResponse, error) {
+  var balance users.GetBalanceResponse
+
+  tx, err := r.conn.Begin(ctx)
+  if err != nil {
+    return users.GetBalanceResponse{}, err
+  }
+  defer tx.Rollback(ctx)
+  
+  if err := tx.QueryRow(ctx, configs.UpdateUserBalance, dto.UserID, dto.Balance + dto.Amount).Scan(&balance.Balance); err != nil {
+    log.Println("transactions.repository: UpdateBalance.QueryRow.Scan Err:", err)
+    return users.GetBalanceResponse{}, err
+  }
+
+  txId, _ := common.UniqueID(tx.Conn(), "TRX", "transactions_id_seq")
+  cmdTag, err := tx.Exec(ctx, configs.InsertTransaction, txId, dto.UserID, dto.TransactionType, dto.PaidStatus, dto.Cashflow)
+  if err != nil {
+    log.Println("transactions.repository: UpdateBalance.Exec Err :", err)
+    return users.GetBalanceResponse{}, err
+  }
+
+  if cmdTag.RowsAffected() != 1 {
+    return users.GetBalanceResponse{}, fmt.Errorf("Failed to insert transaction")
+  }
+
+  if err := tx.Commit(ctx); err != nil {
+    log.Println("transactions.repository: UpdateBalance.tx.Commit Err :", err)
+    return users.GetBalanceResponse{}, err
+  }
+
+  return balance, nil
 }
 
 func NewRepository(conn *pgx.Conn) Repository {

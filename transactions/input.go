@@ -9,3 +9,7 @@ type ProductsInput struct {
 type CreateTransactionInput struct {
   Products []ProductsInput `json:"products"`
 }
+
+type TopupInput struct {
+  Amount  int     `json:"amount" validate:"required,number,min=5000"`
+}

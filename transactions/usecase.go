@@ -17,6 +17,7 @@ type UseCase interface {
   GetTransactionsHistory(userId string, page, size int) ([]TransactionResponse, models.Paging, error)
   GetTransactionHistoryByID(id, userId string) (TransactionResponse, int, error)
   CreateTransaction(userId string, payload CreateTransactionInput) error
+  Topup(payload TopupInput, userId string) (users.GetBalanceResponse, error)
 }
 
 type useCase struct {
@@ -83,6 +84,24 @@ func (u *useCase) CreateTransaction(userId string, payload CreateTransactionInpu
   }
 
   return u.repository.Insert(dto)
+}
+
+func (u *useCase) Topup(payload TopupInput, userId string) (users.GetBalanceResponse, error) {
+  balance, _, err := u.usersUC.GetBalance(userId)
+  if err != nil {
+    return users.GetBalanceResponse{}, err
+  }
+  
+  dto := TransactionDTO{
+    UserID: userId,
+    TransactionType: "CREDIT",
+    PaidStatus: false,
+    Cashflow: "MONEY_IN",
+    Balance: balance.Balance,
+    Amount: payload.Amount,
+  }
+
+  return u.repository.UpdateBalance(dto)
 }
 
 func NewUseCase(repository Repository, transactionsDetailUC transactions_detail.UseCase, productsUC products.UseCase, usersUC users.UseCase) UseCase {

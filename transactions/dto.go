@@ -14,4 +14,5 @@ type TransactionDTO struct {
   Merchants       map[string]entities.User
   Quantities      map[string]int
   Balance         int
+  Amount          int
 }

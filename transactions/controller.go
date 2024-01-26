@@ -1,6 +1,7 @@
 package transactions
 
 import (
+  "fmt"
   "github.com/Rizkyyullah/pay-simple/configs"
   "github.com/Rizkyyullah/pay-simple/shared/common"
   "github.com/Rizkyyullah/pay-simple/middlewares"
@@ -68,12 +69,35 @@ func (c *controller) createTransactionHandler(ctx *gin.Context) {
   common.SendCreatedResponseWithoutData(ctx, time.Now().In(common.GetTimezone()).Format("Monday, 02 January 2006 15:04:05"), "Create transaction successfully")
 }
 
+func (c *controller) topupHandler(ctx *gin.Context) {
+  var userId = ctx.MustGet("userId").(string)
+  var payload TopupInput
+  if err := ctx.ShouldBindJSON(&payload); err != nil {
+    common.SendErrorResponse(ctx, http.StatusBadRequest, err.Error())
+    return
+  }
+
+  if err := common.ValidateInput(payload); len(err) > 0 {
+    common.SendErrorResponse(ctx, http.StatusBadRequest, err)
+    return
+  }
+
+  balance, err := c.useCase.Topup(payload, userId)
+  if err != nil {
+    common.SendErrorResponse(ctx, http.StatusInternalServerError, err.Error())
+    return
+  }
+
+  common.SendSingleResponseWithData(ctx, balance, "Topup successfully")
+}
+
 func (c *controller) Route() {
   // Customer endpoint
   customer := c.rg.Group(configs.CustomersGroup)
   customer.GET(configs.CustomerTransaction, c.authMiddleware.RequireToken("CUSTOMER"), c.getTransactionsHistoryHandler)
   customer.GET(configs.CustomerTransactionWithIDParam, c.authMiddleware.RequireToken("CUSTOMER"), c.getTransactionHistoryByIDHandler)
   customer.POST(configs.CustomerTransaction, c.authMiddleware.RequireToken("CUSTOMER"), c.createTransactionHandler)
+  customer.POST(fmt.Sprintf("%s%s", configs.Balance, configs.CustomerTopup), c.authMiddleware.RequireToken("CUSTOMER"), c.topupHandler)
 }
 
 func NewController(rg *gin.RouterGroup, useCase UseCase, authMiddleware middlewares.AuthMiddleware) *controller {
