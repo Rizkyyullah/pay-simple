@@ -22,4 +22,5 @@ const (
   Balance = "/balance"
   Products = "/products"
   ProductsWithIDParam = "/products/:id"
+  Transfer = "/transactions/transfer"
 )

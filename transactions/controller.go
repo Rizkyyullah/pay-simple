@@ -91,6 +91,28 @@ func (c *controller) topupHandler(ctx *gin.Context) {
   common.SendSingleResponseWithData(ctx, balance, "Topup successfully")
 }
 
+func (c *controller) transferHandler(ctx *gin.Context) {
+  var senderId = ctx.MustGet("userId").(string)
+  var payload TransferInput
+  if err := ctx.ShouldBindJSON(&payload); err != nil {
+    common.SendErrorResponse(ctx, http.StatusBadRequest, err.Error())
+    return
+  }
+
+  if err := common.ValidateInput(payload); len(err) > 0 {
+    common.SendErrorResponse(ctx, http.StatusBadRequest, err)
+    return
+  }
+
+  balance, err := c.useCase.Transfer(payload, senderId)
+  if err != nil {
+    common.SendErrorResponse(ctx, http.StatusInternalServerError, err.Error())
+    return
+  }
+
+  common.SendSingleResponseWithData(ctx, balance, "Transfer successfully")
+}
+
 func (c *controller) Route() {
   // Customer endpoint
   customer := c.rg.Group(configs.CustomersGroup)
@@ -98,6 +120,7 @@ func (c *controller) Route() {
   customer.GET(configs.CustomerTransactionWithIDParam, c.authMiddleware.RequireToken("CUSTOMER"), c.getTransactionHistoryByIDHandler)
   customer.POST(configs.CustomerTransaction, c.authMiddleware.RequireToken("CUSTOMER"), c.createTransactionHandler)
   customer.POST(fmt.Sprintf("%s%s", configs.Balance, configs.CustomerTopup), c.authMiddleware.RequireToken("CUSTOMER"), c.topupHandler)
+  customer.POST(configs.Transfer, c.authMiddleware.RequireToken("CUSTOMER"), c.transferHandler)
 }
 
 func NewController(rg *gin.RouterGroup, useCase UseCase, authMiddleware middlewares.AuthMiddleware) *controller {

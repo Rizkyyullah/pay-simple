@@ -21,7 +21,7 @@ type Repository interface {
   FindAllByUserID(userId string, page, size int) ([]entities.Transaction, models.Paging, error)
   FindByID(id, userId string) (entities.Transaction, error)
   Insert(dto TransactionDTO) error
-  UpdateBalance(dto TransactionDTO) (users.GetBalanceResponse, error)
+  UpdateBalance(dto TransactionDTO, targetId string) (users.GetBalanceResponse, error)
 }
 
 type repository struct {
@@ -141,7 +141,7 @@ func (r *repository) Insert(dto TransactionDTO) error {
   return nil
 }
 
-func (r *repository) UpdateBalance(dto TransactionDTO) (users.GetBalanceResponse, error) {
+func (r *repository) UpdateBalance(dto TransactionDTO, targetId string) (users.GetBalanceResponse, error) {
   var balance users.GetBalanceResponse
 
   tx, err := r.conn.Begin(ctx)
@@ -149,10 +149,40 @@ func (r *repository) UpdateBalance(dto TransactionDTO) (users.GetBalanceResponse
     return users.GetBalanceResponse{}, err
   }
   defer tx.Rollback(ctx)
-  
-  if err := tx.QueryRow(ctx, configs.UpdateUserBalance, dto.UserID, dto.Balance + dto.Amount).Scan(&balance.Balance); err != nil {
-    log.Println("transactions.repository: UpdateBalance.QueryRow.Scan Err:", err)
-    return users.GetBalanceResponse{}, err
+
+  if !dto.Transfer {
+    if err := tx.QueryRow(ctx, configs.UpdateUserBalance, dto.UserID, dto.Balance).Scan(&balance.Balance); err != nil {
+      log.Println("transactions.repository: UpdateBalance.QueryRow.Scan Err:", err)
+      return users.GetBalanceResponse{}, err
+    }
+  } else {
+    targetBalance := 0
+    if err := tx.QueryRow(ctx, "SELECT balance FROM users WHERE id = $1", targetId).Scan(&targetBalance); err != nil {
+      log.Println("transactions.repository: UpdateBalance.QueryRow.Scan Err:", err)
+      return users.GetBalanceResponse{}, err
+    }
+
+    // Update target balance
+    if cmdTag, err := tx.Exec(ctx, "UPDATE users SET balance = $2, updated_at = CURRENT_TIMESTAMP WHERE id = $1;", targetId, targetBalance + dto.Amount); err != nil {
+      log.Println("transactions.repository: UpdateBalance.tx.Exec Err:", err)
+      return users.GetBalanceResponse{}, err
+    } else if cmdTag.RowsAffected() != 1 {
+      return users.GetBalanceResponse{}, fmt.Errorf("No row found to update")
+    }
+
+    if err := tx.QueryRow(ctx, "SELECT balance FROM users WHERE id = $1", dto.UserID).Scan(&balance.Balance); err != nil {
+      log.Println("transactions.repository: UpdateBalance.QueryRow.Scan Err:", err)
+      return users.GetBalanceResponse{}, err
+    }
+
+    if err := tx.QueryRow(ctx, "UPDATE users SET balance = $2, updated_at = CURRENT_TIMESTAMP WHERE id = $1 RETURNING balance;", dto.UserID, dto.Balance).Scan(&balance.Balance); err != nil {
+      log.Println("transactions.repository: UpdateBalance.QueryRow.Scan Err:", err)
+      return users.GetBalanceResponse{}, err
+    }
+    
+    if balance.Balance < 0 {
+      return users.GetBalanceResponse{}, err
+    }
   }
 
   txId, _ := common.UniqueID(tx.Conn(), "TRX", "transactions_id_seq")
@@ -210,7 +240,7 @@ func (r *repository) updateMerchantBalance(tx pgx.Tx, merchantBalance *int, merc
     return err
   }
 
-  cmdTag, err := tx.Exec(ctx, "UPDATE users SET balance = $2 WHERE id = $1 AND role = 'MERCHANT';", merchantId, *merchantBalance + totalPrice)
+  cmdTag, err := tx.Exec(ctx, "UPDATE users SET balance = $2, updated_at = CURRENT_TIMESTAMP WHERE id = $1 AND role = 'MERCHANT';", merchantId, *merchantBalance + totalPrice)
   if err != nil {
     return err
   }
@@ -223,7 +253,7 @@ func (r *repository) updateMerchantBalance(tx pgx.Tx, merchantBalance *int, merc
 }
 
 func (r *repository) updateCustomerBalance(tx pgx.Tx, customerBalance *int, customerId string) error {
-  cmdTag, err := tx.Exec(ctx, "UPDATE users SET balance = $2 WHERE id = $1 AND role = 'CUSTOMER';", customerId, *customerBalance)
+  cmdTag, err := tx.Exec(ctx, "UPDATE users SET balance = $2, updated_at = CURRENT_TIMESTAMP WHERE id = $1 AND role = 'CUSTOMER';", customerId, *customerBalance)
   if err != nil {
     return err
   }

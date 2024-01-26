@@ -15,4 +15,5 @@ type TransactionDTO struct {
   Quantities      map[string]int
   Balance         int
   Amount          int
+  Transfer        bool
 }

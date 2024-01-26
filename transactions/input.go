@@ -13,3 +13,8 @@ type CreateTransactionInput struct {
 type TopupInput struct {
   Amount  int     `json:"amount" validate:"required,number,min=5000"`
 }
+
+type TransferInput struct {
+  ToUserId  string  `json:"toUserId" validate:"required"`
+  Amount    int     `json:"amount" validate:"required,number,min=5000"`
+}
