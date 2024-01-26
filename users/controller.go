@@ -4,8 +4,10 @@ import (
   "github.com/Rizkyyullah/pay-simple/configs"
   "github.com/Rizkyyullah/pay-simple/shared/common"
   "github.com/Rizkyyullah/pay-simple/middlewares"
+  "net/http"
 
   "github.com/gin-gonic/gin"
+  "github.com/jinzhu/copier"
 )
 
 type controller struct {
@@ -25,7 +27,27 @@ func (c *controller) getBalanceHandler(ctx *gin.Context) {
   common.SendSingleResponseWithData(ctx, balance, "Your current balance")
 }
 
+func (c *controller) getProfileHandler(ctx *gin.Context) {
+  id := ctx.MustGet("userId").(string)
+  user, statusCode, err := c.useCase.GetUserByID(id)
+  if err != nil {
+    common.SendErrorResponse(ctx, statusCode, err.Error())
+    return
+  }
+
+  var profile UserResponse
+  if err := copier.Copy(&profile, &user); err != nil {
+    common.SendErrorResponse(ctx, http.StatusInternalServerError, err.Error())
+    return
+  }
+
+  common.SendSingleResponseWithData(ctx, profile, "Your profile")
+}
+
 func (c *controller) Route() {
+  // Common endpoint
+  c.rg.GET(configs.Profile, c.authMiddleware.RequireToken("MERCHANT", "CUSTOMER"), c.getProfileHandler)
+  
   // Merchant endpoint
   merchant := c.rg.Group(configs.MerchantsGroup)
   merchant.GET(configs.Balance, c.authMiddleware.RequireToken("MERCHANT"), c.getBalanceHandler)
