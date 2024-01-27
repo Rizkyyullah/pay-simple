@@ -35,11 +35,11 @@ func LoadConfig() TokenConfig {
 	viper.AutomaticEnv()
 	
 	if err := viper.ReadInConfig(); err != nil {
-	  log.Fatal("configs.ReadInConfig Err :", err)
+	  log.Println("configs.ReadInConfig Err :", err)
 	}
 	
 	if err := viper.Unmarshal(&ENV); err != nil {
-	  log.Fatal("configs.Unmarshal Err :", err)
+	  log.Println("configs.Unmarshal Err :", err)
 	}
 	
 	return TokenConfig{
