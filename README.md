@@ -1,6 +1,6 @@
 # PaySimple API Documentation
 
-The Pay-Simple API provides endpoints for a simulation payment system. It includes authentication, user registration, profile management, balance inquiries, product listings, and transaction history. Semua aktivitas akan direkam dan dimasukkan kedalam file [history.json](history.json).
+The Pay-Simple API provides endpoints for a simulation payment system. It includes authentication, user registration, profile management, balance inquiries, product listings, and transaction history. All activities will be recorded and put into the [history.json](history.json) file.
 
 ## How to run an application
 
