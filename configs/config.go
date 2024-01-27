@@ -35,7 +35,21 @@ func LoadConfig() TokenConfig {
 	viper.AutomaticEnv()
 	
 	if err := viper.ReadInConfig(); err != nil {
-	  log.Println("configs.ReadInConfig Err :", err)
+	   log.Println("configs.ReadInConfig Err :", err)
+	  if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
+  		ENV = &Config{
+  		  DB_Host: viper.GetString("DB_HOST"),
+      	DB_Port: viper.GetString("DB_PORT"),
+      	DB_User: viper.GetString("DB_USER"),
+      	DB_Password: viper.GetString("DB_PASSWORD"),
+      	DB_Name: viper.GetString("DB_NAME"),
+      	Token_Issue: viper.GetString("TOKEN_ISSUE"),
+      	Token_Secret: viper.GetString("TOKEN_SECRET"),
+      	Token_Expire: viper.GetInt("TOKEN_EXPIRE"),
+      	API_Host: viper.GetString("API_HOST"),
+      	Port: viper.GetInt("PORT"),
+  		}
+  	}
 	}
 	
 	if err := viper.Unmarshal(&ENV); err != nil {
