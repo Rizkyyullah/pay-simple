@@ -127,5 +127,12 @@
     "action": "POST",
     "status": 200,
     "endpoint": "/api/v1/auth/login/merchants"
+  },
+  {
+    "timestamp": "Saturday, 27-Jan-24 10:56:01 WIB",
+    "userID": "USR-0006",
+    "action": "POST",
+    "status": 201,
+    "endpoint": "/api/v1/auth/register"
   }
 ]
