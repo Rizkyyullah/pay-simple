@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"sync"
 	"time"
-	"github.com/Rizkyyullah/pay-simple/shared/common"
 
 	"github.com/gin-gonic/gin"
 )
@@ -37,7 +36,7 @@ func (m *logMiddleware) ActivityLogs() gin.HandlerFunc {
   return func(ctx *gin.Context) {
 		ctx.Next()
 		
-		timestamp := time.Now().In(common.GetTimezone()).Format(time.RFC850)
+		timestamp := time.Now().Format(time.RFC850)
 		endpoint := ctx.FullPath()
 
 		logEntry := LogEntry{

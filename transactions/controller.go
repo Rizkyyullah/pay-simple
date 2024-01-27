@@ -66,7 +66,7 @@ func (c *controller) createTransactionHandler(ctx *gin.Context) {
     return
   }
 
-  common.SendCreatedResponseWithoutData(ctx, time.Now().In(common.GetTimezone()).Format("Monday, 02 January 2006 15:04:05"), "Create transaction successfully")
+  common.SendCreatedResponseWithoutData(ctx, time.Now().Format("Monday, 02 January 2006 15:04:05"), "Create transaction successfully")
 }
 
 func (c *controller) topupHandler(ctx *gin.Context) {

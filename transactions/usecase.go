@@ -139,7 +139,7 @@ func (u *useCase) getTransactionsResponse(transactions ...entities.Transaction) 
       TransactionType: val.TransactionType,
       PaidStatus: val.PaidStatus,
       Cashflow: val.Cashflow,
-      CreatedAt: val.CreatedAt.Format("Monday, 02 January 2006 15:04:05 WIB"),
+      CreatedAt: val.CreatedAt.Format("Monday, 02 January 2006 15:04:05 MST"),
     }
 
     transactionsResponse = append(transactionsResponse, transactionResponse)

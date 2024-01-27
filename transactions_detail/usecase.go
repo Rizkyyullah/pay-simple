@@ -36,7 +36,7 @@ func (u *useCase) CreateTransactionDetail(id, transactionId, productId string, q
     TransactionID: transactionDetail.TransactionID,
     Quantity: transactionDetail.Quantity,
     TotalPrice: transactionDetail.TotalPrice,
-    CreatedAt: transactionDetail.CreatedAt.Format("Monday, 02 January 2006 15:04:05 WIB"),
+    CreatedAt: transactionDetail.CreatedAt.Format("Monday, 02 January 2006 15:04:05 MST"),
   }
 
   return tdResponse, nil
@@ -53,7 +53,7 @@ func (u *useCase) getTransactionsDetailResponse(transactionsDetail []entities.Tr
       ID: val.ID,
       Quantity: val.Quantity,
       TotalPrice: val.TotalPrice,
-      CreatedAt: val.CreatedAt.Format("Monday, 02 January 2006 15:04:05 WIB"),
+      CreatedAt: val.CreatedAt.Format("Monday, 02 January 2006 15:04:05 MST"),
     }
 
     transactionsDetailResponse = append(transactionsDetailResponse, tdResponse)

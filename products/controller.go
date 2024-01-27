@@ -36,7 +36,7 @@ func (c *controller) insertHandler(ctx *gin.Context) {
     return
   }
   
-  common.SendCreatedResponse(ctx, product, time.Now().In(common.GetTimezone()).Format("Monday, 02 January 2006 15:04:05 WIB"), "Create product successfully")
+  common.SendCreatedResponse(ctx, product, time.Now().Format("Monday, 02 January 2006 15:04:05 MST"), "Create product successfully")
 }
 
 func (c *controller) getAllProductsHandler(ctx *gin.Context) {
