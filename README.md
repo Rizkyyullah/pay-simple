@@ -1,12 +1,12 @@
 # PaySimple API Documentation
 
-The Pay-Simple API provides endpoints for a simulation payment system. It includes authentication, user registration, profile management, balance inquiries, product listings, and transaction history.
+The Pay-Simple API provides endpoints for a simulation payment system. It includes authentication, user registration, profile management, balance inquiries, product listings, and transaction history. Semua aktivitas akan direkam dan dimasukkan kedalam file [history.json](history.json).
 
 ## How to run an application
 
 ### Prerequisite
 1. Have a [Git](https://git-scm.com) that has been installed on your computer
-2. [Go](https://go.dev) Language has been installed and [PostgreSQL](https://postgresql.com)
+2. [Go](https://go.dev) Language has been installed and [PostgreSQL](https://postgresql.org)
 3. Have this clone repo
 4. Or please access endpoint [https://pay-simple.adaptable.app](https://pay-simple.adaptable.app) using a REST Client such as Postman or Insomnia to make a request without having to do this clone repo
 

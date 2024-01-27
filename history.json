@@ -112,5 +112,20 @@
     "action": "GET",
     "status": 401,
     "endpoint": "/api/v1/auth/logout"
+  },
+  {
+    "timestamp": "Saturday, 27-Jan-24 09:15:01 WIB",
+    "userID": "Anonymous",
+    "email": "Anonymous",
+    "action": "GET",
+    "status": 401,
+    "endpoint": "/api/v1/auth/logout"
+  },
+  {
+    "timestamp": "Saturday, 27-Jan-24 09:15:06 WIB",
+    "email": "rizkyyullah@mail.com",
+    "action": "POST",
+    "status": 200,
+    "endpoint": "/api/v1/auth/login/merchants"
   }
 ]

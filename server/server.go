@@ -73,7 +73,7 @@ func NewServer() *Server {
 	transactionsUC := transactions.NewUseCase(transactionsRepo, transactionsDetailUC, productsUC, usersUC)
 
 	engine := gin.Default()
-	address := fmt.Sprintf("%s:%d", configs.ENV.API_Host, configs.ENV.PORT)
+	address := fmt.Sprintf("%s:%d", configs.ENV.API_Host, configs.ENV.API_Port)
 
 	return &Server{
 		authUC,
