@@ -35,6 +35,7 @@ var ENV *Config
 
 func LoadConfig() TokenConfig {
 	viper.SetConfigFile(".env")
+	viper.AutomaticEnv()
 	
 	if os.Getenv("APPMODE") == "DEPLOY" {
 	  file, err := os.Create(".env")
