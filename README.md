@@ -8,7 +8,9 @@ The Pay-Simple API provides endpoints for a simulation payment system. It includ
 1. Have a [Git](https://git-scm.com) that has been installed on your computer
 2. [Go](https://go.dev) Language has been installed and [PostgreSQL](https://postgresql.com)
 3. Have this clone repo
-4. Or please access endpoint [https://pay-simple.adaptable.app](https://pay-simple.adaptable.app) using a REST Client such as Postman or Insomnia to make a request without having to do this clone repo
+4. Or please access endpoint [https://pay-simple.adaptable.app/api/v1/{resource}](https://pay-simple.adaptable.app/api/v1) using a REST Client such as Postman or Insomnia to make a request without having to do this clone repo
+
+Note*: I recommend running the application locally, as there were some issues during the deployment process and I haven't tried all the endpoints that were created. But for the process of registering, logging in, logging out, and viewing all products it runs smoothly on the adaptable server.
 
 ### Installation
 If you want to clone this repo and run it on your local computer. Follow these steps
