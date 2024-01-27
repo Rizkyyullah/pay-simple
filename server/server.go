@@ -31,8 +31,10 @@ type Server struct {
 func (s *Server) initRoute() {
 	v1 := s.engine.Group(configs.APIGroup)
   authMiddleware := middlewares.NewAuthMiddleware(s.jwtService)
-  
-  auth.NewController(v1, s.authUC).Route()
+  logMiddleware := middlewares.NewLogMiddleware()
+  v1.Use(logMiddleware.ActivityLogs())
+
+  auth.NewController(v1, s.authUC, s.jwtService).Route()
   users.NewController(v1, s.usersUC, authMiddleware).Route()
   products.NewController(v1, s.productsUC, authMiddleware).Route()
   transactions.NewController(v1, s.transactionsUC, authMiddleware).Route()

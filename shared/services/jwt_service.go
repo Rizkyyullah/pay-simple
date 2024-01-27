@@ -29,13 +29,14 @@ func (j *jwtService) CreateToken(user entities.User) (string, error) {
 		},
 		UserID: user.ID,
 		Role: user.Role,
+		Authorized: true,
 	}
 
 	token := jwt.NewWithClaims(j.config.JwtSigningMethod, claims)
 	ss, err := token.SignedString(j.config.JwtSignatureKey)
 	if err != nil{
 	  log.Println("auth.service.CreateToke Err :", err)
-		return "", fmt.Errorf("Oops, failed to create token")
+		return "", fmt.Errorf("failed to create token")
 	}
 
 	return ss, nil

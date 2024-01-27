@@ -9,7 +9,6 @@ const (
   // Merchants Group
   MerchantRegister = "/auth/register/merchants"
   MerchantLogin = "/auth/login/merchants"
-  MerchantLogout = "/auth/logout/merchants"
   
   // Customers Group
   CustomerRegister = "/auth/register"
@@ -19,6 +18,7 @@ const (
   CustomerTopup = "/topup"
   
   // Common
+  Logout = "/auth/logout"
   Balance = "/balance"
   Products = "/products"
   ProductsWithIDParam = "/products/:id"

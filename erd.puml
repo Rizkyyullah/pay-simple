@@ -1,0 +1,64 @@
+@startuml
+
+' hide the spot
+' hide circle
+
+' avoid problems with angled crows feet
+skinparam linetype ortho
+
+entity "users" {
+  * **id: VARCHAR(10) <<PK>>**
+  --
+  name: VARCHAR(255)
+  username: VARCHAR(100)
+  balance: INTEGER
+  email: VARCHAR(255) <<UNIQUE>>
+  phone_number: CHAR(13) <<UNIQUE>>
+  password: VARCHAR(255) <<HASHED>>
+  role: role_type <<ENUM>>
+  created_at: TIMESTAMP
+  updated_at: TIMESTAMP
+}
+
+entity "products" {
+  * **id: VARCHAR(10) <<PK>>**
+  **user_id: VARCHAR(10) <<FK>>**
+  --
+  product_name: VARCHAR(100)
+  description: TEXT
+  stock: INTEGER
+  price: INTEGER
+  created_at: TIMESTAMP
+  updated_at: TIMESTAMP
+}
+
+entity transactions {
+  * **id: VARCHAR(10) <<PK>>**
+  **user_id: VARCHAR(10) <<FK>>**
+  --
+  transaction_date: DATE
+  transaction_type: transaction_type <<ENUM>>
+  paid_status: BOOLEAN
+  cashflow: cashflow_type <<ENUM>>
+  created_at: TIMESTAMP
+  updated_at: TIMESTAMP
+}
+
+entity transaction_details {
+  * **id: VARCHAR(10) <<PK>>**
+  **transaction_id: VARCHAR(10) <<FK>>**
+  **product_id: VARCHAR(10) <<FK>>**
+  --
+  quantity: INT
+  total_price: INT
+  created_at: TIMESTAMP
+  updated_at: TIMESTAMP
+}
+
+users |o..o{ products
+users ||..o{ transactions
+users ||..o{ transaction_details
+
+transactions |o..o{ transaction_details
+
+@enduml

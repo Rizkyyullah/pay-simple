@@ -1,0 +1,116 @@
+[
+  {
+    "timestamp": "Saturday, 27-Jan-24 08:43:33 WIB",
+    "userID": "Unknown",
+    "email": "Unknown",
+    "action": "GET",
+    "status": 0,
+    "endpoint": "/api/v1/auth/logout"
+  },
+  {
+    "timestamp": "Saturday, 27-Jan-24 08:44:42 WIB",
+    "userID": "Unknown",
+    "email": "Unknown",
+    "action": "GET",
+    "status": 0,
+    "endpoint": "/api/v1/auth/logout"
+  },
+  {
+    "timestamp": "Saturday, 27-Jan-24 08:44:46 WIB",
+    "userID": "Unknown",
+    "email": "rizkyyullah@mail.com",
+    "action": "POST",
+    "status": 0,
+    "endpoint": "/api/v1/auth/login/merchants"
+  },
+  {
+    "timestamp": "Saturday, 27-Jan-24 08:46:43 WIB",
+    "userID": "Unknown",
+    "email": "rizkyyullah@mail.com",
+    "action": "POST",
+    "status": 200,
+    "endpoint": "/api/v1/auth/login/merchants"
+  },
+  {
+    "timestamp": "Saturday, 27-Jan-24 08:46:57 WIB",
+    "userID": "USR-0004",
+    "email": "Unknown",
+    "action": "GET",
+    "status": 200,
+    "endpoint": "/api/v1/auth/logout"
+  },
+  {
+    "timestamp": "Saturday, 27-Jan-24 08:46:58 WIB",
+    "userID": "Unknown",
+    "email": "Unknown",
+    "action": "GET",
+    "status": 401,
+    "endpoint": "/api/v1/auth/logout"
+  },
+  {
+    "timestamp": "Saturday, 27-Jan-24 08:56:17 WIB",
+    "userID": "Unknown",
+    "email": "Unknown",
+    "action": "GET",
+    "status": 401,
+    "endpoint": "/api/v1/auth/logout"
+  },
+  {
+    "timestamp": "Saturday, 27-Jan-24 08:56:20 WIB",
+    "email": "ibnu@mail.com",
+    "action": "POST",
+    "status": 200,
+    "endpoint": "/api/v1/auth/login"
+  },
+  {
+    "timestamp": "Saturday, 27-Jan-24 08:56:23 WIB",
+    "userID": "USR-0002",
+    "action": "GET",
+    "status": 200,
+    "endpoint": "/api/v1/auth/logout"
+  },
+  {
+    "timestamp": "Saturday, 27-Jan-24 08:57:29 WIB",
+    "userID": "Unknown",
+    "email": "Unknown",
+    "action": "GET",
+    "status": 401,
+    "endpoint": "/api/v1/auth/logout"
+  },
+  {
+    "timestamp": "Saturday, 27-Jan-24 08:57:35 WIB",
+    "email": "ibnu@mail.com",
+    "action": "POST",
+    "status": 200,
+    "endpoint": "/api/v1/auth/login"
+  },
+  {
+    "timestamp": "Saturday, 27-Jan-24 09:00:09 WIB",
+    "userID": "USR-0002",
+    "action": "GET",
+    "status": 200,
+    "endpoint": "/api/v1/auth/logout"
+  },
+  {
+    "timestamp": "Saturday, 27-Jan-24 09:00:12 WIB",
+    "email": "rizkyyullah@mail.com",
+    "action": "POST",
+    "status": 200,
+    "endpoint": "/api/v1/auth/login/merchants"
+  },
+  {
+    "timestamp": "Saturday, 27-Jan-24 09:00:15 WIB",
+    "userID": "USR-0004",
+    "action": "GET",
+    "status": 200,
+    "endpoint": "/api/v1/auth/logout"
+  },
+  {
+    "timestamp": "Saturday, 27-Jan-24 09:00:16 WIB",
+    "userID": "Anonymous",
+    "email": "Anonymous",
+    "action": "GET",
+    "status": 401,
+    "endpoint": "/api/v1/auth/logout"
+  }
+]

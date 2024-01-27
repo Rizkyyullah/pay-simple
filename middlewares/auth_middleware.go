@@ -39,7 +39,7 @@ func (m *authMiddleware) RequireToken(roles ...string) gin.HandlerFunc {
     authCookie, err := ctx.Cookie("auth_cookie")
     if err != nil {
       log.Println("middlewares.AuthMiddleware: Cookie Err :", err.Error())
-			common.SendUnauthorizedResponse(ctx, "Unauthorized : No cookies found or cookies have expired")
+			common.SendUnauthorizedResponse(ctx, "Unauthorized : No cookies found or you've logout of the application")
 			return
     }
 
@@ -49,6 +49,11 @@ func (m *authMiddleware) RequireToken(roles ...string) gin.HandlerFunc {
 			common.SendUnauthorizedResponse(ctx, "Unauthorized : " + err.Error())
 			return
 		}
+
+    if !claims["authorized"].(bool) {
+			common.SendUnauthorizedResponse(ctx, "Unauthorized")
+			return
+    }
 
 		ctx.Set("userId", claims["userId"])
 
