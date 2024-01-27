@@ -18,7 +18,7 @@ type Config struct {
 	Token_Secret    string
 	Token_Expire    int
 	API_Host        string
-	API_Port        int
+	Port        int
 }
 
 type TokenConfig struct {
