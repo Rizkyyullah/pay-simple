@@ -112,5 +112,26 @@
     "action": "GET",
     "status": 401,
     "endpoint": "/api/v1/auth/logout"
+  },
+  {
+    "timestamp": "Tuesday, 05-Aug-25 17:22:12 WIB",
+    "userID": "USR-0001",
+    "action": "POST",
+    "status": 201,
+    "endpoint": "/api/v1/auth/register"
+  },
+  {
+    "timestamp": "Tuesday, 05-Aug-25 17:24:52 WIB",
+    "email": "rizkyyullah@gmail.com",
+    "action": "POST",
+    "status": 200,
+    "endpoint": "/api/v1/auth/login"
+  },
+  {
+    "timestamp": "Tuesday, 05-Aug-25 17:26:23 WIB",
+    "userID": "USR-0001",
+    "action": "GET",
+    "status": 200,
+    "endpoint": "/api/v1/products"
   }
 ]

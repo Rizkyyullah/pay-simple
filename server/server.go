@@ -1,17 +1,18 @@
 package server
 
 import (
-  "context"
+	"context"
 	"fmt"
+	"log"
+
 	"github.com/Rizkyyullah/pay-simple/auth"
 	"github.com/Rizkyyullah/pay-simple/configs"
 	"github.com/Rizkyyullah/pay-simple/middlewares"
-	"github.com/Rizkyyullah/pay-simple/users"
 	"github.com/Rizkyyullah/pay-simple/products"
 	"github.com/Rizkyyullah/pay-simple/shared/services"
 	"github.com/Rizkyyullah/pay-simple/transactions"
 	"github.com/Rizkyyullah/pay-simple/transactions_detail"
-	"log"
+	"github.com/Rizkyyullah/pay-simple/users"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5"
@@ -47,25 +48,48 @@ func (s *Server) Run() {
 	}
 }
 
+func getDatabaseConnectionString() string {
+	if configs.ENV.DATABASE_URL != "" {
+		log.Print("server: Using connection string from DATABASE_URL")
+		return configs.ENV.DATABASE_URL
+	}
+	
+	dsn := fmt.Sprintf(
+		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable TimeZone=%s",
+		configs.ENV.DB_Host,
+		configs.ENV.DB_Port,
+		configs.ENV.DB_User,
+		configs.ENV.DB_Password,
+		configs.ENV.DB_Name,
+		configs.ENV.Timezone,
+	)
+	
+	log.Printf("Using constructed connection string for host: %s", configs.ENV.DB_Host)
+	return dsn
+}
+
 func NewServer() *Server {
 	tokenConfig := configs.LoadConfig()
-	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable TimeZone=Asia/Jakarta", configs.ENV.DB_Host, configs.ENV.DB_Port, configs.ENV.DB_User, configs.ENV.DB_Password, configs.ENV.DB_Name)
+	
+	dsn := getDatabaseConnectionString()
 	conn, err := pgx.Connect(context.Background(), dsn)
 	if err != nil {
-		log.Fatal("server.Connect Err :", err)
+		log.Fatalf("server.Connect Err: %v", err)
 	}
-	log.Printf("You are now connected to database '%s' as user '%s'", configs.ENV.DB_Name, configs.ENV.DB_User)
+	
+	if err := conn.Ping(context.Background()); err != nil {
+		log.Fatalf("server.Ping Err: %v", err)
+	}
 
-  // service
+	log.Printf("Successfully connected to database")
+
   jwtService := services.NewJwtService(tokenConfig)
 
-	// Repo
 	usersRepo := users.NewRepository(conn)
 	productsRepo := products.NewRepository(conn)
 	transactionsRepo := transactions.NewRepository(conn)
 	transactionsDetailRepo := transactions_detail.NewRepository(conn)
 	
-	// UseCase
 	authUC := auth.NewUseCase(usersRepo, jwtService)
 	usersUC := users.NewUseCase(usersRepo, jwtService)
 	productsUC := products.NewUseCase(productsRepo, usersUC, jwtService)
@@ -73,7 +97,9 @@ func NewServer() *Server {
 	transactionsUC := transactions.NewUseCase(transactionsRepo, transactionsDetailUC, productsUC, usersUC)
 
 	engine := gin.Default()
-	address := fmt.Sprintf("%s:%d", configs.ENV.API_Host, configs.ENV.API_Port)
+	
+	address := fmt.Sprintf(":%s", configs.ENV.API_Port)
+	log.Printf("Server will start on %s", address)
 
 	return &Server{
 		authUC,

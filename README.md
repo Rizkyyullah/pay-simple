@@ -5,15 +5,18 @@ The Pay-Simple API provides endpoints for a simulation payment system. It includ
 ## How to run an application
 
 ### Prerequisite
+
 1. Have a [Git](https://git-scm.com) that has been installed on your computer
 2. [Go](https://go.dev) Language has been installed and [PostgreSQL](https://postgresql.com)
 3. Have this clone repo
-4. Or please access endpoint [https://pay-simple.adaptable.app/api/v1/{resource}](https://pay-simple.adaptable.app/api/v1) using a REST Client such as Postman or Insomnia to make a request without having to do this clone repo
+4. Or please access endpoint [https://pay-simple-production.up.railway.app/api/v1/{resource}](https://pay-simple-production.up.railway.app/api/v1) using a REST Client such as Postman or Insomnia to make a request without having to do this clone repo
 
-Note*: I recommend running the application locally, as there were some issues during the deployment process and I haven't tried all the endpoints that were created. But for the process of registering, logging in, logging out, and viewing all products it runs smoothly on the adaptable server.
+Note\*: Since I'm using railway trial plan, access to log into database is limited and please lemme know if the endpoint is no longer usable but it's still listed.
 
 ### Installation
+
 If you want to clone this repo and run it on your local computer. Follow these steps
+
 ```bash
 # clone this repository using command
 git clone https://github.com/Rizkyyullah/pay-simple.git
@@ -62,16 +65,17 @@ Request:
 
 ```json
 {
-	"name": "Merchant 1",
-	"username": "merchant 1",
-	"email": "merchant1@mail.com",
-	"phoneNumber": "0812345678910",
-	"password": "password",
-	"confirmPassword": "password"
+  "name": "Merchant 1",
+  "username": "merchant 1",
+  "email": "merchant1@mail.com",
+  "phoneNumber": "0812345678910",
+  "password": "password",
+  "confirmPassword": "password"
 }
 ```
 
 - Response Body:
+
 ```json
 {
   "meta": {
@@ -105,8 +109,8 @@ Request:
 
 ```json
 {
-	"email": "merchant1@mail.com",
-	"password": "password"
+  "email": "merchant1@mail.com",
+  "password": "password"
 }
 ```
 
@@ -135,16 +139,17 @@ Request:
 
 ```json
 {
-	"name": "Customer 1",
-	"username": "customer 1",
-	"email": "customer1@mail.com",
-	"phoneNumber": "0812345678911",
-	"password": "password",
-	"confirmPassword": "password"
+  "name": "Customer 1",
+  "username": "customer 1",
+  "email": "customer1@mail.com",
+  "phoneNumber": "0812345678911",
+  "password": "password",
+  "confirmPassword": "password"
 }
 ```
 
 - Response Body:
+
 ```json
 {
   "meta": {
@@ -178,8 +183,8 @@ Request:
 
 ```json
 {
-	"email": "customer2@mail.com",
-	"password": "password"
+  "email": "customer2@mail.com",
+  "password": "password"
 }
 ```
 
@@ -289,8 +294,8 @@ Request:
 
 - Method: `GET`
 - Parameters:
-    - page (How good page you want to access)
-    - size (How many data do you want to display on one page)
+  - page (How good page you want to access)
+  - size (How many data do you want to display on one page)
 - Response:
 
 ```json
@@ -346,20 +351,20 @@ Request:
     "message": "Get all products successfully"
   },
   "data": {
-      "id": "PRD-0001",
-      "merchant": {
-        "name": "Merchant 1",
-        "username": "merchant 1",
-        "email": "merchant1@mail.com",
-        "phoneNumber": "0812345678910"
-      },
-      "productName": "Product A",
-      "description": "Desc A",
-      "stock": 90,
-      "price": 40000,
-      "createdAt": "2024-01-25T09:19:55Z",
-      "updatedAt": "2024-01-25T09:19:55Z"
-    }
+    "id": "PRD-0001",
+    "merchant": {
+      "name": "Merchant 1",
+      "username": "merchant 1",
+      "email": "merchant1@mail.com",
+      "phoneNumber": "0812345678910"
+    },
+    "productName": "Product A",
+    "description": "Desc A",
+    "stock": 90,
+    "price": 40000,
+    "createdAt": "2024-01-25T09:19:55Z",
+    "updatedAt": "2024-01-25T09:19:55Z"
+  }
 }
 ```
 
@@ -375,8 +380,8 @@ Request:
 
 - Method: `GET`
 - Parameters:
-    - page (How good page you want to access)
-    - size (How many data do you want to display on one page)
+  - page (How good page you want to access)
+  - size (How many data do you want to display on one page)
 - Response:
 
 ```json
@@ -419,10 +424,10 @@ Request:
 
 ```json
 {
-	"productName": "Product A Mark II",
-	"description": "Desc Product A Mark II",
-	"stock": 10,
-	"price": 10000
+  "productName": "Product A Mark II",
+  "description": "Desc Product A Mark II",
+  "stock": 10,
+  "price": 10000
 }
 ```
 
@@ -470,7 +475,6 @@ Response:
   "code": 200,
   "message": "Delete product successfully"
 }
-
 ```
 
 ## Customer Transactions
@@ -485,10 +489,11 @@ Request:
 
 - Method: `GET`
 - Parameters:
-    - page (How good page you want to access)
-    - size (How many data do you want to display on one page)
+  - page (How good page you want to access)
+  - size (How many data do you want to display on one page)
 
 Response:
+
 ```json
 {
   "meta": {
@@ -557,13 +562,13 @@ Request:
 
 ```json
 {
-	"products": [
-		{
-			"id": "PRD-0001",
-			"merchantId": "USR-0001",
-			"quantity": 1
-		}
-	]
+  "products": [
+    {
+      "id": "PRD-0001",
+      "merchantId": "USR-0001",
+      "quantity": 1
+    }
+  ]
 }
 ```
 
@@ -582,7 +587,7 @@ Request:
 
 ```json
 {
-	"amount": 150000
+  "amount": 150000
 }
 ```
 
@@ -614,8 +619,8 @@ Request:
 
 ```json
 {
-	"toUserId": "USR-0001",
-	"amount": 150000
+  "toUserId": "USR-0001",
+  "amount": 150000
 }
 ```
 
