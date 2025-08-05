@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/Rizkyyullah/pay-simple/auth"
 	"github.com/Rizkyyullah/pay-simple/configs"
@@ -98,7 +99,16 @@ func NewServer() *Server {
 
 	engine := gin.Default()
 	
-	address := fmt.Sprintf(":%s", configs.ENV.API_Port)
+	port := os.Getenv("PORT")
+	if port == "" {
+		if configs.ENV.API_Port != "" {
+			port = fmt.Sprint(configs.ENV.API_Port)
+		} else {
+			port = "5000"
+		}
+	}
+	
+	address := fmt.Sprintf(":%s", port)
 	log.Printf("Server will start on %s", address)
 
 	return &Server{

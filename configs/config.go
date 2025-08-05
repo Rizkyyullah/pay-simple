@@ -86,9 +86,6 @@ func setupProductionEnv() {
 		if ENV.DB_Name == "" {
 			ENV.DB_Name = os.Getenv("DB_NAME")
 		}
-		if ENV.API_Port == "" {
-			ENV.API_Port = os.Getenv("API_PORT")
-		}
 		if ENV.Timezone == "" {
 			ENV.Timezone = os.Getenv("TIMEZONE")
 		}
